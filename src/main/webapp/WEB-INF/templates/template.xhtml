@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+
+	<title>#{initParam['APP_TITLE']}</title>
+
+	<meta name="content-language" content="en" />
+	<meta name="copyright" content="abuscom, 2011" />
+	<meta name="publisher" content="abuscom GmbH" />
+	<meta name="author" content="abuscom GmbH, 2011" />
+	<meta name="robots" content="index, follow" />
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="imagetoolbar" content="no" />
+
+	<h:outputStylesheet id="stylesheet" library="css" name="web.css" />
+</h:head>
+<h:body>
+	<f:view locale="#{i18nController.currentLocale}">
+		
+				<div id="header" class="header">
+					<!-- HEADER SECTION -->
+					<ui:insert name="header">
+						<ui:include src="header.xhtml" />
+						<ui:include src="menu.xhtml" />
+					</ui:insert>
+				</div>
+		
+				<div id="baseContent" class="content">
+		
+					<!-- CONTENT SECTION -->
+					<ui:insert name="content" >
+						
+					</ui:insert>
+					<!-- END OF CONTENT SECTION -->
+				</div>
+
+		
+				<!-- FOOTER SECTION -->
+				<div id="footer" class="footer">
+				<ui:insert name="footer">
+					<ui:include src="footer.xhtml" />					
+				</ui:insert>
+				<!-- END OF FOOTER SECTION -->
+				</div>
+		
+			
+	</f:view>
+</h:body>
+</html>

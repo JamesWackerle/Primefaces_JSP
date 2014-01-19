@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/template.xhtml">
+	<ui:define name="content">
+	<f:view>
+
+		<h:form id="trackingForm" rendered="#{userBean.signedInUser.orderListViewPermission == 1}">
+		
+			<h:inputHidden value="#{trackingBean.utcTimeSeconds}" id="timeJS" />
+			<h:inputHidden value="#{userBean.localTimeDifference}" id="timeDiff" />
+	   		<p:dataTable var="reviewRequest" value="#{trackingBean.selectedServiceOrder}">
+				<f:facet name="header">
+				<div style="font-weight: bold; font-size:30pt;">
+				#{messages.labor_title}
+				</div>
+				</f:facet>
+				<p:column headerText="#{messages.labor_status}">
+					<h:outputLabel value="#{trackingBean.selectedServiceOrder.statusObject.statusText}"/>	
+				</p:column>
+				<p:column headerText="#{messages.order_overview_order_number}" >
+					<h:outputLabel value="#{trackingBean.selectedServiceOrder.orderNumber}"/>
+				</p:column>
+				<p:column headerText="#{messages.order_overview_activity}" >
+					<h:outputLabel value="#{trackingBean.selectedServiceOrder.activity}"/>
+				</p:column>												
+				<p:column headerText="#{messages.labor_machine}" >
+					<h:outputLabel value="#{trackingBean.selectedServiceOrder.machine} - #{trackingBean.selectedServiceOrder.machineObject.machineDescription}"/>
+				</p:column>
+			</p:dataTable>
+			
+			<p:spacer width="2000" height="15" />
+			
+			<p:dataTable var="record" value="#{trackingBean.records}" selection="#{trackingBean.selectedRecord}" rowKey="#{record.activityLineNumber}" selectionMode="single" resizableColumns="true">
+				<p:column headerText="#{messages.labor_line_number}" sortBy="#{record.lineNumber}" filterBy="#{record.lineNumber}" filterMatchMode="contains">
+					<h:outputLabel value="#{record.lineNumber}" />
+				</p:column>																
+				<p:column headerText="#{messages.labor_task}" filterBy="#{record.task}" filterMatchMode="contains">
+					<h:outputLabel value="#{record.task}"/>
+				</p:column>
+				<p:column headerText="#{messages.labor_task_description}" filterBy="#{record.taskDescription}" filterMatchMode="contains">
+					<h:outputLabel value="#{record.taskDescription}"/>
+				</p:column>	
+				<p:column headerText="#{messages.labor_action}" style="width:325px;">
+					<p:commandButton value="#{messages.labor_start}" update=":trackingForm:display" oncomplete="dlg.show()" style="float:left;" >
+		                <f:setPropertyActionListener value="#{record}" target="#{trackingBean.selectedRecord}" />
+		            </p:commandButton>
+		             <p:commandButton value="#{messages.labor_stop}" update=":trackingForm:finishDT" action="#{trackingBean.initializeInProgressTimeRecords}" oncomplete="finish.show()" style="float:left;" >
+		                <f:setPropertyActionListener value="#{record}" target="#{trackingBean.selectedRecord}" />
+		            </p:commandButton>
+		            <p:commandButton value="#{messages.labor_add_time}" update=":trackingForm:display" oncomplete="addTime.show()" style="float:left;">
+		                <f:setPropertyActionListener value="#{record}" target="#{trackingBean.selectedRecord}" />
+		            </p:commandButton>
+  		            <p:commandButton value="Modify Time Records" update=":trackingForm:modifyDT" rendered="false" action="#{trackingBean.initializeAllTimeRecords}" oncomplete="modify.show()" >
+		            	<f:setPropertyActionListener value="#{record}" target="#{trackingBean.selectedRecord}" />
+		            </p:commandButton>		            
+				</p:column>												
+			</p:dataTable>
+			
+			<p:spacer width="2000" height="15"/>
+			
+		    <p:commandButton value="#{messages.labor_back}" onclick="javascript:window.location.assign('reporting.jsf')"  style="float:left;" />
+			
+			
+			<p:dialog widgetVar="dlg" header="#{messages.labor_confirm_tracking}">
+				<p:messages autoUpdate="true" redisplay="false"/>
+				<h:panelGrid id="display" columns="2">
+					<h:outputText value="#{messages.labor_task}: " />
+					<h:outputLabel value="#{trackingBean.selectedRecord.task}"/>
+					<h:outputText value="#{messages.labor_activity_line_number}" />
+					<h:outputLabel value="#{trackingBean.selectedRecord.lineNumber}"/>
+					<h:outputText value="#{messages.labor_employee}" />
+					<p:inputText id="EMN" value="#{trackingBean.startRecordEmployeeNumber}" required="true" requiredMessage="#{messages.labor_employee_required}"/>
+					<p:commandButton id="confirmButtonDialog" update=":trackingForm:display" action="#{trackingBean.submitStartTimeRecord}" value="#{messages.labor_confirm}"  title="#{messages.labor_confirm}">
+		                <!--<f:setPropertyActionListener value="#{statusRequestsBean.selectedServiceRequest}" target="#{statusRequestsBean.selectedServiceRequest}" /> -->
+		            </p:commandButton>
+		            <p:commandButton id="cancel" value="#{messages.labor_cancel}" onclick="dlg.hide()" type="button" />			
+				</h:panelGrid>
+			</p:dialog>
+			
+			<p:dialog widgetVar="finish" width="750" height="400" header="#{messages.labor_confirm_interrupt}">
+				<p:dataTable id="finishDT" var="timeRecord" value="#{trackingBean.inProgressLaborRecords}" selection="#{trackingBean.selectedTimeRecord}" rowKey="#{timeRecord.employeeNumber}" selectionMode="single" resizableColumns="true">
+					<f:facet name="header">
+						<div style="font-weight: bold; font-size:18pt;">
+						<h:outputLabel value="#{messages.labor_interrupt}: #{trackingBean.selectedRecord.task} - #{trackingBean.selectedRecord.lineNumber}"/>
+						</div>
+					</f:facet>		
+					<p:column headerText="#{messages.labor_employee}" sortBy="#{timeRecord.employeeNumber}" filterBy="#{timeRecord.employeeNumber}" filterMatchMode="contains" style="width:150px;">
+						<h:outputLabel value="#{timeRecord.employeeNumber}" />
+					</p:column>
+					<p:column headerText="#{messages.labor_start_time}" sortBy="#{timeRecord.localTimeStartDate}" filterBy="#{timeRecord.localTimeStartDate}" filterMatchMode="contains" style="width:150px;">
+						<h:outputLabel value="#{timeRecord.localTimeStartDate}">
+							<f:convertDateTime pattern="yyyy-MM-dd HH:mm" type="both"/>
+						</h:outputLabel>
+					</p:column>																
+					<p:column headerText="#{messages.labor_action}" style="width:300px;">
+		            	<p:commandButton value="#{messages.labor_interrupt}" action="#{trackingBean.interruptTimeRecord}" oncomplete="finish.hide()" >
+			                <f:setPropertyActionListener value="#{timeRecord}" target="#{trackingBean.selectedTimeRecord}" />
+			            </p:commandButton>
+			            <p:commandButton value="#{messages.labor_complete}" action="#{trackingBean.interruptTimeRecord}" oncomplete="finish.hide()" >
+			                <f:setPropertyActionListener value="#{timeRecord}" target="#{trackingBean.selectedTimeRecord}" />
+			            </p:commandButton>
+			            <p:commandButton id="cancelFinish" value="#{messages.labor_cancel}" onclick="finish.hide()" type="button" />
+		            </p:column>											
+				</p:dataTable>				
+			</p:dialog>
+			
+			<p:dialog widgetVar="modify" width="900" height="400" header="Modify Time Records">
+				<p:dataTable id="modifyDT" var="allTimeRecord" value="#{trackingBean.allLaborRecords}" selection="#{trackingBean.selectedModifyTimeRecord}" rowKey="#{allTimeRecord.transactionDate}" selectionMode="single" resizableColumns="true">
+					<f:facet name="header">
+						<div style="font-weight: bold; font-size:18pt;">
+						<h:outputLabel value="#{messages.labor_interrupt}: #{trackingBean.selectedRecord.task} - #{trackingBean.selectedRecord.lineNumber}"/>
+						</div>
+					</f:facet>		
+					<p:column headerText="#{messages.labor_employee}" sortBy="#{allTimeRecord.employeeNumber}" filterBy="#{allTimeRecord.employeeNumber}" filterMatchMode="contains" style="width:150px;">
+						<h:outputLabel value="#{allTimeRecord.employeeNumber}" />
+					</p:column>
+					<p:column headerText="#{messages.labor_start_time}" sortBy="#{allTimeRecord.startModifyDate}" filterBy="#{allTimeRecord.startModifyDate}" filterMatchMode="contains" style="width:150px;">
+						<p:calendar id="popupButtonModifyCalStart" value="#{allTimeRecord.startModifyDate}" pattern="yyyy-MM-dd HH:mm" showOn="button" validatorMessage="#{messages.labor_date_time_validator_message}"/>
+						<h:outputText value="yyyy-MM-dd HH:mm" />
+					</p:column>																
+					<p:column headerText="End Time" sortBy="#{allTimeRecord.endModifyDate}" filterBy="#{allTimeRecord.endModifyDate}" filterMatchMode="contains" style="width:150px;">
+						<p:calendar id="popupButtonModifyCalEnd" value="#{allTimeRecord.endModifyDate}" pattern="yyyy-MM-dd HH:mm" showOn="button" validatorMessage="#{messages.labor_date_time_validator_message}"/>
+						<h:outputText value="yyyy-MM-dd HH:mm"/>
+					</p:column>
+					<p:column headerText="#{messages.labor_action}" style="width:300px;">
+		            	<p:commandButton value="Save" action="#{trackingBean.saveTimeRecord}" oncomplete="modify.hide()" >
+			                <f:setPropertyActionListener value="#{allTimeRecord}" target="#{trackingBean.selectedModifyTimeRecord}" />
+			            </p:commandButton>
+			            <p:commandButton id="cancelModify" value="#{messages.labor_cancel}" onclick="modify.hide()" type="button" />
+		            </p:column>											
+				</p:dataTable>				
+			</p:dialog>			
+			
+			<p:dialog widgetVar="addTime" width="450" header="#{messages.labor_add_time}">
+				<p:messages autoUpdate="true"/>
+				<h:panelGrid id="displayAdd" columns="2">
+					<h:outputText value="#{messages.labor_employee}" />
+					<p:inputText id="inputForAddTime" value="#{trackingBean.addRecordEmployeeNumber}" required="true" requiredMessage="#{messages.labor_employee_required}"/>
+					<h:outputText value="#{messages.labor_start_date_time}" />
+					<h:panelGrid columns="2" style="width:300px;">
+						<p:calendar id="popupButtonCalStart" pattern="yyyy-MM-dd HH:mm" value="#{trackingBean.addStartDate}" showOn="button" validatorMessage="#{messages.labor_date_time_validator_message}">
+							<!--<f:validateRegex pattern="[0-1]{1}[0-2]{1}/[0-3]{1}[0-9]{1}/[0-9]{4}[ ]{1}[0-2]{1}[0-9]{1}[:]{1}[0-5]{1}[0-9]{1}"/>--> 
+						</p:calendar>
+						<h:outputText value="yyyy-MM-dd HH:mm" />
+					</h:panelGrid>
+					<h:outputText value="#{messages.labor_end_date_time}" />
+					<h:panelGrid columns="2" style="width:300px;">
+						<p:calendar id="popupButtonCalEnd" value="#{trackingBean.addStopDate}" pattern="yyyy-MM-dd HH:mm" showOn="button" validatorMessage="#{messages.labor_date_time_validator_message}"/>
+						<h:outputText value="yyyy-MM-dd HH:mm" />
+					</h:panelGrid>   		
+					<p:commandButton id="confirmButtonAdd" update=":trackingForm:display" onclick="setTimeZoneDifference()" action="#{trackingBean.submitAddTimeRecord}" value="#{messages.labor_confirm}"  title="#{messages.labor_confirm}">
+		                <!--<f:setPropertyActionListener value="#{statusRequestsBean.selectedServiceRequest}" target="#{statusRequestsBean.selectedServiceRequest}" /> -->
+		            </p:commandButton>
+		            <p:commandButton id="cancelAdd" value="#{messages.labor_cancel}" onclick="addTime.hide()" type="button" />
+				</h:panelGrid>
+			</p:dialog>
+
+			<p:spacer width="2000" height="15" />			
+			<p:spacer width="2000" height="15" />			
+			<p:spacer width="2000" height="10" />
+			
+		</h:form>		
+		
+		<p:panelGrid columns="1" style="border:none;" rendered="#{userBean.signedInUser.orderListViewPermission == 2}">			 
+			<h:outputText value="#{messages.labor_permissions}" style="font-size:14pt;" />
+			<p:graphicImage value="resources/images/rejectmark.PNG" width="200" height="200" />
+		</p:panelGrid>
+		
+		<script>
+			function setTimeZoneDifference() {
+				var offset = new Date().getTimezoneOffset() * 60 * 1000; // in Milliseconds time difference between UTC and local time
+				document.getElementById('trackingForm:timeDiff').value = offset;
+				return offset
+			}
+		</script>
+		
+	   	
+	</f:view>
+	</ui:define>
+</ui:composition>                                     

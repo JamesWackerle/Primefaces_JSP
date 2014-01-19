@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/template.xhtml">
+	<ui:define name="content">
+		<h:form>
+			<p:panel header="Courses">
+            	<p:dataTable value="#{myDataView.myDataModel}" var="myData" rowIndexVar="idx">
+            		<p:column style="width:50px">
+            			<f:facet name="header">
+            				ID
+            			</f:facet>
+            			<h:outputText value="#{myData[0].id}" />
+            		</p:column>
+            		<p:column style="width:50px">
+            			<f:facet name="header">
+            				NAME
+            			</f:facet>
+            			<h:outputText value="#{myData[0].myLookup.name}" />
+            		</p:column>
+            		<p:column style="width:50px">
+            			<f:facet name="header">
+            				VALUE
+            			</f:facet>
+            			<h:outputText value="#{myData[0].value}" >
+            				<f:convertNumber pattern="#,##0.00" />
+            			</h:outputText>
+            		</p:column>
+            	
+            	
+            	
+            	</p:dataTable>
+            </p:panel>
+
+
+            </h:form>
+
+
+	</ui:define>
+</ui:composition>

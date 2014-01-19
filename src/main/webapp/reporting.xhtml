@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/template.xhtml">
+	<ui:define name="content">
+	<f:view>
+		
+		<h:form id="chartForm" rendered="#{userBean.signedInUser.orderListViewPermission == 1}">
+			<p:panelGrid columns="5" rows="2" style="width:100%">
+		        <p:panel header="#{messages.pie_panel_title}" style="text-align:center">
+		            <h:panelGrid columns="1" style="width:100%">
+					<p:pieChart id="custom" value="#{reportingBean.pieModel}" fill="true" showDataLabels="true"
+                		title="#{messages.pie_title}" style="width:240px;height:180px" sliceMargin="5" diameter="102" />
+		            </h:panelGrid>
+		        </p:panel>
+		        <p:panel header="#{messages.meter_panel_title}" style="text-align:center">
+		            <h:panelGrid columns="1" style="width:100%">
+		           		 <p:meterGaugeChart id="meterGauge" value="#{reportingBean.meterGaugeModel}" showTickLabels="false" labelHeightAdjust="66" intervalOuterRadius="80" 
+                               seriesColors="66cc66, E7E658, cc6666" style="width:240px;height:180px" title="#{messages.meter_title}"/>
+		            </h:panelGrid>
+		        </p:panel>
+		        <p:panel header="#{messages.old_panel_title}" style="text-align:center">
+		            <h:panelGrid columns="1" style="width:100%">
+						<h:graphicImage  width="240" height="163" value="#{resource['images/registered.PNG']}" />
+			            <h:outputLabel value="#{reportingBean.oldestOrder} #{messages.old_panel_label}"/>  
+		            </h:panelGrid>
+		        </p:panel>	
+		        <p:panel header="#{messages.chart_panel_title}" style="text-align:center">
+		            <h:panelGrid columns="1" style="width:100%">
+		            <p:lineChart id="category" value="#{reportingBean.categoryModel}"
+     					title="#{messages.chart_title}" minY="0" maxY="200" style="height:180px;width:240px;margin-top:10px"/>
+		            </h:panelGrid>
+		        </p:panel>	
+		        <p:panel header="#{messages.purchase_orders_panel_title}" style="text-align:center">
+		            <h:panelGrid columns="1" style="width:100%">
+		            	<h:graphicImage  width="240" height="163" value="#{resource['images/open_orders.PNG']}" />
+		   				<h:outputLabel value="#{reportingBean.openPurchaseOrders}"/>         
+		            </h:panelGrid>
+		        </p:panel>			        		        		        		            
+			</p:panelGrid>
+		</h:form>
+		
+		<h:form id="reportingOrderForm" rendered="#{userBean.signedInUser.orderListViewPermission == 1}">
+	  		<p:dataTable var="serviceOrder" value="#{reportingBean.orders}" selection="#{reportingBean.selectedServiceOrder}" sortBy="#{serviceOrder.orderNumber}" sortOrder="descending" paginator="true" rows="10"
+	               paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+	               rowsPerPageTemplate="5,10,15">
+	
+				<f:facet name="header">
+				<div style="font-weight: bold; font-size:30pt;">
+				#{messages.order_overview_title}
+				</div>
+				</f:facet>
+				<p:column headerText="#{messages.order_overview_order_number}" sortBy="#{serviceOrder.orderNumber}" filterBy="#{serviceOrder.orderNumber}" filterMatchMode="contains">
+					<h:outputLabel value="#{serviceOrder.orderNumber}" />
+				</p:column>									
+				<p:column headerText="#{messages.order_overview_activity}" sortBy="#{serviceOrder.activity}" filterBy="#{serviceOrder.activity}" filterMatchMode="contains">
+					<h:outputLabel value="#{serviceOrder.activity}" />
+				</p:column>
+				<p:column headerText="#{messages.order_overview_description}" filterBy="#{serviceOrder.problem}" filterMatchMode="contains">
+					<h:outputLabel value="#{serviceOrder.problem}" />
+				</p:column>		
+				<p:column headerText="#{messages.order_overview_service_type}" sortBy="#{serviceOrder.serviceTypeDescription}" filterBy="#{serviceOrder.serviceTypeDescription}" filterMatchMode="contains">
+					<h:outputLabel value="#{serviceOrder.serviceTypeDescription}" />
+				</p:column>
+				<p:column headerText="#{messages.order_overview_item}" sortBy="#{serviceOrder.item}" filterBy="#{serviceOrder.item}" filterMatchMode="contains">
+					<h:outputLabel value="#{serviceOrder.item}" />
+				</p:column>
+				<p:column headerText="#{messages.order_overview_serial_number}" sortBy="#{serviceOrder.machineObject.machine}" filterBy="#{serviceOrder.machineObject.machine}" filterMatchMode="contains">
+					<h:outputLabel value="#{serviceOrder.machineObject.machine} - #{serviceOrder.machineObject.machineDescription}" />
+				</p:column>	
+				<p:column headerText="#{messages.order_overview_requested}" sortBy="#{serviceOrder.localDate}" filterBy="#{serviceOrder.localDate}" filterMatchMode="contains">
+					<h:outputLabel value="#{serviceOrder.localDate}">
+						<f:convertDateTime pattern="yyyy-MM-dd HH:mm" type="both"/>
+					</h:outputLabel>
+				</p:column>
+				<p:column headerText="#{messages.order_overview_activity_status}" sortBy="#{serviceOrder.status}" filterBy="#{serviceOrder.statusObject.statusText}" filterMatchMode="contains">
+					<h:outputLabel value="#{serviceOrder.statusObject.statusText}" />
+				</p:column>				
+		        <p:column headerText="#{messages.order_overview_action}">
+					<p:pieChart id="custom" value="#{reportingBean.pieModel}" fill="true"
+		              		style="width:75px;height:75px;float:left;" sliceMargin="0" diameter="30" />
+					<p:commandButton value="#{messages.order_overview_labor}" action="#{trackingBean.initializeServiceOrderActivityRecords}" oncomplete="javascript:window.location.assign('tracking.jsf')" style="float:left;">
+                		<f:setPropertyActionListener value="#{serviceOrder}" target="#{trackingBean.selectedServiceOrder}" />
+            		</p:commandButton>				
+					<p:commandButton value="#{messages.order_overview_issue_material}" action="#{issueMaterialBean.initializeServiceOrderMaterialRecords}" oncomplete="javascript:window.location.assign('issuematerial.jsf')" style="float:left;" >
+						<f:setPropertyActionListener value="#{serviceOrder}" target="#{issueMaterialBean.selectedServiceOrder}" />
+            		</p:commandButton>	
+					<p:commandButton value="#{messages.order_overview_order_material}" rendered="#{userBean.signedInUser.orderMatterialPermission == 1}" onclick="javascript:window.location.assign('http://obdapp02:8080/ereqxApp-test')"  style="float:left;" />							
+		        </p:column>				
+			</p:dataTable>
+		</h:form>
+		
+		<p:panelGrid columns="1" style="border:none;" rendered="#{userBean.signedInUser.orderListViewPermission == 2}">			 
+			<h:outputText value="#{messages.order_overview_permissions}" style="font-size:14pt;" />
+			<p:graphicImage value="resources/images/rejectmark.PNG" width="200" height="200" />
+		</p:panelGrid>
+			   	
+	</f:view>
+	</ui:define>
+</ui:composition>                                     

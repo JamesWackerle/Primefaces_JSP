@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/template.xhtml">
+<ui:define name="content">
+	<f:view>		
+		<h:form>		
+			<p:panelGrid>
+				<f:facet name="header">
+			        <p:row>
+			            <p:column colspan="4">
+				            <div style="font-weight: bold; font-size:30pt;">
+								#{messages.dashboard_header}
+							</div>
+						</p:column>
+			        </p:row>	
+				</f:facet>
+				
+				<p:row>
+					<p:column rendered="#{userBean.signedInUser.serviceRequestEntryPermission == 1}">
+						<p:panelGrid style="border:none;"> 	
+							<p:row>
+					            <p:column>
+									<h:outputLabel value="#{messages.dashboard_req}" style="font-weight: bold; font-size:14pt; width:100%;" />
+								</p:column>
+							</p:row>
+							<p:row>
+					            <p:column>
+									<p:commandLink immediate="true" onclick="javascript:window.location.assign('reqs.jsf')"> 
+										<h:graphicImage styleClass="requestimage" id="requestpageimage" alt="#{messages.dashboard_req}" width="200" height="200" value="#{resource['images/reqs.JPG']}" />
+									</p:commandLink>
+								</p:column>
+							</p:row>				
+						</p:panelGrid>	
+					</p:column>
+					
+					<p:column rendered="#{userBean.signedInUser.serviceRequestApprovalPermission == 1}" >	
+						<p:panelGrid style="border:none;"> 
+							<p:row>
+					            <p:column>
+									<h:outputLabel value="#{messages.dashboard_approve_reject}" style="font-weight: bold; font-size:14pt; width:100%;" />
+								</p:column>
+							</p:row>
+							<p:row>
+					            <p:column>
+									<p:commandLink immediate="true" onclick="javascript:window.location.assign('statusreqs.jsf')"> 
+										<h:graphicImage styleClass="requestimage" id="approvepageimage" alt="#{messages.dashboard_approve_reject}" width="200" height="200" value="#{resource['images/checkmark.PNG']}" />
+									</p:commandLink>	
+								</p:column>
+							</p:row>		
+						</p:panelGrid>
+					 </p:column>
+					
+					<p:column rendered="#{userBean.signedInUser.serviceRequestEntryPermission == 1}">
+						<p:panelGrid style="border:none;"> 
+							<p:row>
+					            <p:column>
+									<h:outputLabel value="#{messages.dashboard_review}" style="font-weight: bold; font-size:14pt; width:100%;" />
+								</p:column>
+							</p:row>
+							<p:row>
+					            <p:column>
+									<p:commandLink immediate="true" onclick="javascript:window.location.assign('servicerequestsreview.jsf')">
+										<h:graphicImage styleClass="requestimage" id="reqsreviewimage" alt="#{messages.dashboard_review}" width="200" height="200" value="#{resource['images/reqsreview.JPG']}" />
+									</p:commandLink>	
+								</p:column>
+							</p:row>
+						</p:panelGrid>		
+					</p:column>
+					
+					<p:column rendered="#{userBean.signedInUser.orderListViewPermission == 1}" >	
+						<p:panelGrid style="border:none;"> 
+							<p:row>
+					            <p:column>
+									<h:outputLabel value="#{messages.dashboard_service_order_overview}" style="font-weight: bold; font-size:14pt; width:100%;" />
+								</p:column>
+							</p:row>
+							<p:row>
+					            <p:column>
+									<p:commandLink immediate="true" onclick="javascript:window.location.assign('reporting.jsf')"> 
+										<h:graphicImage styleClass="requestimage" id="orderoverview" alt="#{messages.dashboard_service_order_overview}" width="200" height="200" value="#{resource['images/orderoverview.PNG']}" />
+									</p:commandLink>	
+								</p:column>
+							</p:row>		
+						</p:panelGrid>
+					 </p:column>									
+				</p:row>
+				
+				<p:row>
+					<p:column rendered="#{userBean.signedInUser.orderMatterialPermission == 1}" >	
+						<p:panelGrid style="border:none;"> 
+							<p:row>
+					            <p:column>
+									<h:outputLabel value="#{messages.dashboard_order_material}" style="font-weight: bold; font-size:14pt; width:100%;" />
+								</p:column>
+							</p:row>
+							<p:row>
+					            <p:column>
+									<p:commandLink immediate="true" onclick="javascript:window.location.assign('http://obdapp02:8080/ereqxApp-test')"> 
+										<h:graphicImage styleClass="requestimage" id="ereq" alt="#{messages.dashboard_order_material}" width="200" height="200" value="#{resource['images/ereq.PNG']}" />
+									</p:commandLink>	
+								</p:column>
+							</p:row>		
+						</p:panelGrid>
+					 </p:column>
+				</p:row>							
+			</p:panelGrid>	
+		</h:form>	
+	</f:view>		
+</ui:define>
+</ui:composition>                                     

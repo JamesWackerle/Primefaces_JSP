@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/templateModal.xhtml">
+
+	<ui:define name="content">
+		<form method="post" action="j_security_check">
+
+			<p:messages autoUpdate="true" />
+			<p:focus id="focus" for="j_username"></p:focus>
+			<p:panel header="#{messages.login_header}" style="width:250px; margin-left:auto; margin-right:auto; margin-top:100px">
+						<h:panelGrid columns="2">
+							<h:outputLabel for="j_username" value="#{messages.login_user}" />
+							<h:inputText id="j_username" />
+							<h:outputLabel for="j_password" value="#{messages.login_password}" />
+							<h:inputSecret id="j_password" />
+						</h:panelGrid>
+						<h:panelGrid columns="1" style="text-align:right;width:100%">
+							<input type="submit" value="#{messages.login_action}" />
+						</h:panelGrid>
+			</p:panel>
+
+
+		</form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/template.xhtml">
+	<ui:define name="content">
+	<f:view>
+		
+		<h:form id="issueMaterialForm" rendered="#{userBean.signedInUser.issueMaterialPermission == 1}">
+				  
+	   		<p:dataTable var="reviewRequest" value="#{issueMaterialBean.selectedServiceOrder}">
+				<f:facet name="header">
+					<div style="font-weight: bold; font-size:30pt;">
+					#{messages.material_header}
+					</div>
+				</f:facet>
+				<p:column headerText="#{messages.material_status}">
+					<h:outputLabel value="#{issueMaterialBean.selectedServiceOrder.statusObject.statusText}"/>						
+				</p:column>
+				<p:column headerText="#{messages.material_order_number}">
+					<h:outputLabel value="#{issueMaterialBean.selectedServiceOrder.orderNumber}"/>
+				</p:column>
+				<p:column headerText="#{messages.material_activity}">
+					<h:outputLabel value="#{issueMaterialBean.selectedServiceOrder.activity}"/>
+				</p:column>												
+				<p:column headerText="#{messages.material_machine}">
+					<h:outputLabel value="#{issueMaterialBean.selectedServiceOrder.machine} - #{issueMaterialBean.selectedServiceOrder.machineObject.machineDescription}"/>
+				</p:column>
+			</p:dataTable>
+			
+			<p:spacer width="2000" height="15" />
+			
+			<p:dataTable id="recordTable" var="record" value="#{issueMaterialBean.records}" selection="#{issueMaterialBean.selectedRecord}" rowKey="#{record.activityLineNumber}" selectionMode="single" resizableColumns="true">
+					<f:facet name="header">
+						<div style="font-weight: bold; font-size:16pt;">
+						#{messages.material_records_header}
+						</div>
+					</f:facet>
+					<p:column headerText="#{messages.material_item_line_number}" sortBy="#{record.lineNumber}" filterBy="#{record.lineNumber}" filterMatchMode="contains">
+						<h:outputLabel value="#{record.lineNumber}" />
+					</p:column>																
+					<p:column headerText="#{messages.material_item}" filterBy="#{record.item}" filterMatchMode="contains">
+						<h:outputLabel value="#{record.item}"/>
+					</p:column>
+					<p:column headerText="#{messages.material_item_description}" filterBy="#{record.itemDescription}" filterMatchMode="contains">
+						<h:outputLabel value="#{record.itemDescription}"/>
+					</p:column>
+					<p:column headerText="#{messages.material_quantity}" sortBy="#{record.quantity}" filterBy="#{record.quantity}" filterMatchMode="contains">
+						<h:outputLabel value="#{record.quantity}"/>
+					</p:column>
+					<p:column headerText="#{messages.material_unit}" sortBy="#{record.quantityUnit}" filterBy="#{record.quantityUnit}" filterMatchMode="contains">
+						<h:outputLabel value="#{record.quantityUnit}"/>
+					</p:column>			
+					<p:column id="actionColumn" headerText="#{messages.material_action}">
+							
+							<p:commandButton id="issueButton" value="#{messages.material_issue_material}" update=":issueMaterialForm:display" oncomplete="dlg.show()" rendered="#{issueMaterialBean.selectedServiceOrder.status == 15 or issueMaterialBean.selectedServiceOrder.status == 20}" style="float:left;">
+			               		 <f:setPropertyActionListener value="#{record}" target="#{issueMaterialBean.selectedRecord}" />
+			               		 <f:setPropertyActionListener value="#{record.quantity}" target="#{issueMaterialBean.selectedRecordQuanity}" />
+			            	</p:commandButton>
+			       										
+			            	
+			            	
+		            	<p:panelGrid columns="2" style="border:none;" rendered="#{issueMaterialBean.selectedServiceOrder.status != 15 and issueMaterialBean.selectedServiceOrder.status != 20}">			 
+							<p:graphicImage value="resources/images/rejectmark.PNG" width="42" height="42" />
+							<h:outputText value="#{messages.material_status_permissions_status} #{issueMaterialBean.selectedServiceOrder.statusObject.statusText}#{messages.material_status_permissions_issue_note}" />
+						</p:panelGrid>
+					</p:column>												
+			</p:dataTable>  
+			
+			<p:spacer width="2000" height="15" />
+			 
+			<p:commandButton value="#{messages.material_add_material}" update=":issueMaterialForm:display" oncomplete="dlgAdd.show()" rendered="#{issueMaterialBean.selectedServiceOrder.status == 15 or issueMaterialBean.selectedServiceOrder.status == 20 or issueMaterialBean.selectedServiceOrder.status == 5}" style="float:left;"/>
+           	<p:panelGrid columns="2" style="border:none;" rendered="#{issueMaterialBean.selectedServiceOrder.status != 15 and issueMaterialBean.selectedServiceOrder.status != 20 and issueMaterialBean.selectedServiceOrder.status != 5 and issueMaterialBean.records != null and issueMaterialBean.records.size() != 0}">			 
+				<p:graphicImage value="resources/images/rejectmark.PNG" width="42" height="42" />
+				<h:outputText value="#{messages.material_status_permissions_status} #{issueMaterialBean.selectedServiceOrder.statusObject.statusText}#{messages.material_status_permissions_add_note}" />
+			</p:panelGrid>
+			<p:commandButton value="#{messages.material_order_material}" rendered="#{userBean.signedInUser.orderMatterialPermission == 1}" onclick="javascript:window.location.assign('http://obdapp02:8080/ereqxApp-test')"  style="float:left;" />
+			<p:commandButton value="#{messages.material_back}" onclick="javascript:window.location.assign('reporting.jsf')"  style="float:left;" />							
+			
+			
+			<p:dialog widgetVar="dlg" header="#{messages.material_confirm_issue_header}">
+				<p:messages autoUpdate="true" redisplay="false"/>
+				<h:panelGrid id="display" columns="2">
+					<h:outputText value="#{messages.material_item}: "/>
+					<h:outputLabel value="#{issueMaterialBean.selectedRecord.item} - #{issueMaterialBean.selectedRecord.itemDescription}"/>
+					<h:outputText value="#{messages.material_item_line_number}: " />
+					<h:outputLabel value="#{issueMaterialBean.selectedRecord.lineNumber}"/>
+					<h:outputText value="#{messages.material_quantity}: " />
+					<p:inputText value="#{issueMaterialBean.selectedRecordQuanity}"/>
+					<h:outputText value="#{messages.labor_employee}: " />
+					<p:inputText value="#{issueMaterialBean.issueMaterialEmployeeNumber}"/>
+					<p:commandButton id="confirmButtonDialog" update=":issueMaterialForm:display" action="#{issueMaterialBean.issueMaterial}" value="#{messages.material_confirm}"  title="#{messages.material_confirm}">
+		                <!--<f:setPropertyActionListener value="#{statusRequestsBean.selectedServiceRequest}" target="#{statusRequestsBean.selectedServiceRequest}" /> -->
+		            </p:commandButton>
+		            <p:commandButton id="cancel" value="#{messages.material_cancel}" onclick="dlg.hide()" type="button" />			
+				</h:panelGrid>
+			</p:dialog>
+			
+			<p:dialog widgetVar="dlgAdd" header="#{messages.material_add_header}">
+				<p:messages autoUpdate="true"/>
+				<h:panelGrid id="displayAdd" columns="2">
+					<h:outputText value="#{messages.material_item}: "/>
+					<p:inputText value="#{issueMaterialBean.addItem}"/>
+					<!--<p:autoComplete id="itemAutoComplete" value="#{issueMaterialBean.selectedAddItem}" var="i" itemValue="#{i}" converter="itemConverter" itemLabel="#{i.item} - #{i.itemDescription}" completeMethod="#{issueMaterialBean.completeItemName}" queryDelay="20"/>-->
+					<h:outputText value="#{messages.material_quantity}: "/>
+					<p:inputText value="#{issueMaterialBean.addQuantity}"/>
+					<h:outputText value="#{messages.labor_employee}: "/>
+					<p:inputText value="#{issueMaterialBean.addMaterialEmployeeNumber}"/>
+					<p:commandButton id="AddButtonDialog" update=":issueMaterialForm:displayAdd" action="#{issueMaterialBean.addMaterial}" value="#{messages.material_add}"  title="#{messages.material_add}">
+		                <!--<f:setPropertyActionListener value="#{statusRequestsBean.selectedServiceRequest}" target="#{statusRequestsBean.selectedServiceRequest}" /> -->
+		            </p:commandButton>
+		            <p:commandButton id="cancelAdd" value="#{messages.material_cancel}" onclick="dlgAdd.hide()" type="button" />			
+				</h:panelGrid>
+			</p:dialog>	
+			
+			<p:spacer width="2000" height="15" />
+			<p:spacer width="2000" height="15" />
+			<p:spacer width="2000" height="10" />
+			
+		</h:form>
+		
+		<p:panelGrid columns="1" style="border:none;" rendered="#{userBean.signedInUser.issueMaterialPermission == 2}">			 
+			<h:outputText value="#{messages.material_permissions}" style="font-size:14pt;" />
+			<p:graphicImage value="resources/images/rejectmark.PNG" width="200" height="200" />
+		</p:panelGrid>
+	   	
+	</f:view>
+	</ui:define>
+</ui:composition>                                     

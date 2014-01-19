@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="/WEB-INF/templates/template.xhtml">
+	<ui:define name="content">
+	
+		<h:form id="aboutform">
+
+			<p:panel header="#{messages.about_header}" styleClass="centralpanel" style="width:400px">
+				<h:panelGrid columns="2" >
+					<h:outputLabel for="appid" value="#{messages.about_application_id}" />
+					<h:outputText id="appid" value="#{aboutView.applicationId}" />
+
+					<h:outputLabel for="title" value="#{messages.about_application_title}" />
+					<h:outputText id="title" value="#{aboutView.applicationName}" />
+	
+					<h:outputLabel for="version" value="#{messages.about_application_version}" />
+					<h:outputText id="version" value="#{aboutView.version}" />
+	
+					<h:outputLabel for="contactName" value="#{messages.about_contactName}" />
+					<h:outputText id="contactName" value="#{aboutView.applicationContactName}" />
+	
+					<h:outputLabel for="contactEmail" value="#{messages.about_contactEmail}" />
+					<h:outputLink  value="mailto:#{aboutView.applicationContactEmail}">
+					<h:outputText id="contactEmail" value="#{aboutView.applicationContactEmail}" />
+					</h:outputLink>
+					
+
+					<h:outputLabel for="contactDesc" value="mailto:#{messages.about_application_description}" />
+					<h:outputText id="contactDesc" value="#{aboutView.applicationDescription}" escape="false" />
+
+				</h:panelGrid>
+			
+				<h:panelGrid columns="1" style="text-align:center;width:100%">
+					<p:commandButton value="#{messages.menu_file_home}"  action="home" immediate="true" ajax="false" />
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

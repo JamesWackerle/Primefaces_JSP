@@ -1,0 +1,80 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #FFFFFF;
+	font-family: Arial, Verdana, sans-serif;
+	font-size: 11px;
+	min-width: 800px;
+	min-height: 600px;
+/* 	background-image: url("http://localhost:8080/abuscom-webtemplate/resources/images/header.png"); */
+/* 	background-repeat: no-repeat; */
+}
+
+.headerimage {
+	height: 54px;
+	width: 100%;
+	border-bottom: 1px solid #336699;
+}
+
+.requestimage {
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 20px;
+}
+
+ui-icon-reqs {
+	width: 200px; 
+    height: 200px; 
+	background-image: #{resource['images/reqs.JPG']};
+}
+
+.headertext {
+	height: 35px;
+	width: 100%;
+	border-bottom: 1px solid #336699;
+	font-size: 25px;
+	text-align: center;
+	color: #336699;
+}
+
+.ui-icon { 
+    width: 16px; 
+    height: 16px; 
+    background-image: #{resource['images/reqs.JPG']}; 
+}
+
+.table-col-header {
+	font-weight: bold; 
+	font-size:14pt;
+}
+
+.username {
+	position:absolute;
+	right: 100px;
+	top: 106px;
+	float: right;
+}
+
+.content {
+	position: relative;
+	top: 10px;
+	min-height: 400px;
+	border-bottom: 1px solid #336699;
+	padding-top: 5px;
+}
+
+.centralpanel {
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 100px;
+}
+
+.footer {
+	position: relative;
+	top: 15px;
+}
+
+.header {
+	position: relative;
+	top: 0px;
+}

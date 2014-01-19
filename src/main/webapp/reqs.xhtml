@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/template.xhtml">
+		<ui:define name="content">
+		<f:view>
+        	<p:messages autoUpdate="false" />
+
+			<h:form id="requestForm" rendered="#{userBean.signedInUser.serviceRequestEntryPermission == 1}"> <!-- add the following attribute for file Upload: enctype="multipart/form-data" -->
+				<p:panelGrid columns="4" colspan="40">
+					<f:facet name="header">
+						<div style="font-weight: bold; font-size:30pt;">
+							#{messages.req_title}
+						</div>
+					</f:facet>
+					<h:outputLabel for="machine" value="#{messages.label_machine}" style="font-size:14pt;" /> 
+					<p:autoComplete id="machine" value="#{requestBean.selectedMachine}" var="m" itemValue="#{m}" converter="machineConverter" itemLabel="#{m.machine} - #{m.machineDescription}" completeMethod="#{requestBean.completeMachineName}" queryDelay="400"/>
+			       	<h:outputText for="departmentSelect" id="department" value="#{messages.req_department}" style="font-size:14pt;" /> 
+			        <p:selectOneMenu id="departmentSelect" value="#{requestBean.department}" >
+			       	 <f:selectItems value ="#{userBean.departmentDropdownObject}" var="department" itemLabel="#{department.departmentLabel}" itemValue="#{department.departmentValue}" />
+			        </p:selectOneMenu>		
+			        <h:outputLabel for="problems" value="#{messages.label_problem}" style="font-size:14pt;" />
+			        <p:inputText id="problems" value="#{requestBean.problem}" label="problem" />
+			        <h:outputText for="prioritySelect" value="#{messages.req_priority}" style="font-size:14pt;" /> 
+					<p:selectOneMenu id="prioritySelect" value="#{requestBean.priority}">
+						<f:selectItems value="#{userBean.priorityDropdownObject}" var="priority" itemLabel="#{priority.priorityLabel}" itemValue="#{priority.priorityValue}"/>
+				    </p:selectOneMenu>
+			        <h:outputLabel for="comments" value="#{messages.req_comments}" style="font-size:14pt;" />  
+					<p:inputTextarea id="comments" value="#{requestBean.comments}" label="comment" autoResize="false" rows="6" cols="33" />        
+			        <h:outputText value="#{messages.req_emergency}" style="font-size:14pt;" />
+			        <p:selectBooleanCheckbox value="#{requestBean.emergency}" />      
+			   		<p:panelGrid columns="2" style="border:none;">
+			   				<h:outputText  value="#{messages.req_file_upload}" style="font-size:14pt;"/> 
+					   		<p:fileUpload fileUploadListener="#{fileUploadController.handleFileUpload}"
+							            mode="advanced"
+							            auto="true"
+							            sizeLimit="100000" 
+							            allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/>
+					</p:panelGrid>
+			        <p:commandButton value="#{messages.req_submit}" actionListener="#{requestBean.submit}" update="growl,requestForm">
+			       		<!--  <p:ajax listener="#{requestBean.submit}" immediate="true"/> -->
+			       	</p:commandButton>
+				</p:panelGrid>
+				<p:growl id="growl" showDetail="true" sticky="false" /> 
+			</h:form>
+			
+			<p:panelGrid columns="1" style="border:none;" rendered="#{userBean.signedInUser.serviceRequestEntryPermission == 2}">			 
+				<h:outputText value="#{messages.req_permissions}" style="font-size:14pt;" />
+				<p:graphicImage value="resources/images/rejectmark.PNG" width="200" height="200" />
+			</p:panelGrid>
+</f:view>
+	</ui:define>
+</ui:composition>                                     

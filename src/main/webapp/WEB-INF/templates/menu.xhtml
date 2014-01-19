@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:util="http://java.sun.com/jsf/composite/comp/util">
+
+	<h:form id="menuform">
+		<h:panelGroup layout="block" style="width:100%; min-width: 800px;">
+			<p:menubar  >  
+		        <p:submenu label="#{messages.menu_file}">
+	        		<!--  <p:menuitem value="#{messages.menu_file_home}" action="home" immediate="true" ajax="false"/>-->
+	        		<p:menuitem value="#{messages.dashboard_header}" immediate="true" onclick="javascript:window.location.assign('dashboard.jsf')"/>
+	        		<p:menuitem value="#{messages.dashboard_req}" immediate="true" onclick="javascript:window.location.assign('reqs.jsf')" rendered="#{userBean.signedInUser.serviceRequestEntryPermission == 1}"/>
+	        		<p:menuitem value="#{messages.dashboard_approve_reject}" immediate="true" onclick="javascript:window.location.assign('statusreqs.jsf')" rendered="#{userBean.signedInUser.serviceRequestApprovalPermission == 1}"/>
+		            <p:menuitem value="#{messages.dashboard_review}" immediate="true" onclick="javascript:window.location.assign('servicerequestsreview.jsf')" rendered="#{userBean.signedInUser.serviceRequestReviewPermission == 1}"/>
+		            <p:menuitem value="#{messages.dashboard_service_order_overview}" immediate="true" onclick="javascript:window.location.assign('reporting.jsf')" rendered="#{userBean.signedInUser.orderListViewPermission == 1}"/>
+		            <p:menuitem value="Switch User" immediate="true" onclick="javascript:window.location.assign('user.jsf')"/>
+		            <p:separator />
+		            <p:submenu binding="#{languageMenuModel.submenu}"> </p:submenu>
+		            <p:separator />
+		            <p:menuitem value="#{messages.menu_logout}" icon="ui-icon-close" url="/logout"/>  
+		        </p:submenu>  
+	  
+		        <p:submenu label="#{messages.menu_view}">
+					<ui:insert name="viewmenu" />        	
+		        </p:submenu>  
+		  
+		        <p:submenu label="#{messages.menu_help}" style="float:right; right:150px" >
+		        	<p:menuitem value="#{messages.menu_help_main}" style="float:right;" />
+		        	<p:menuitem value="#{messages.menu_help_application}" style="float:right;" />
+		        	
+		        	<p:separator /> 
+		        	<p:menuitem value="#{messages.menu_help_about}" action="about" immediate="true" ajax="false" style="float:right;" />
+		        </p:submenu>  
+		  
+		        <p:submenu label="#{messages.menu_edit}" style="float:right; right: 150px" >  
+					<ui:insert name="editmenu" />
+		        </p:submenu>  
+			
+			
+	    	</p:menubar>  
+	    	
+				<h:outputText value="#{userBean.signedInUser.name}" styleClass="username"  />
+		</h:panelGroup>
+		
+	</h:form>
+
+
+</ui:composition>

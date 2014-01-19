@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/template.xhtml">
+		<ui:define name="content">
+		<f:view>
+		
+		<h:form id="reviewRequestsForm" rendered="#{userBean.signedInUser.serviceRequestReviewPermission == 1}">
+
+		    <p:contextMenu for="reviewRequestDT" id="contextMenuID">
+		        <p:menuitem id="viewContextMenuOption" value="View" update="display, op" icon="ui-icon-search" oncomplete="opWidget.show()"/>
+		    </p:contextMenu>
+			<p:overlayPanel id="op" widgetVar="opWidget" for="viewContextMenuOption" my="right top">
+					<h:outputText value="#{serviceRequestsReviewBean.selectedServiceRequest.problem}" />
+			</p:overlayPanel>
+		    		
+	   		<p:dataTable id="reviewRequestDT" var="reviewRequest" value="#{serviceRequestsReviewBean.requests}" selection="#{serviceRequestsReviewBean.selectedServiceRequest}" rowKey="#{reviewRequest.callNumber}" selectionMode="single" sortBy="#{reviewRequest.callNumber}" sortOrder="descending" paginator="true" rows="10"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 rowsPerPageTemplate="5,10,15">
+                     			
+				<f:facet name="header">
+				<div style="font-weight: bold; font-size:30pt;">
+				#{messages.review_title}
+				</div>
+				</f:facet>
+				<p:column headerText="#{messages.request_dt_call_number}" sortBy="#{reviewRequest.callNumber}" filterBy="#{reviewRequest.callNumber}" filterMatchMode="contains">
+					<h:outputLabel value="#{reviewRequest.callNumber}" />
+				</p:column>									
+				<p:column headerText="#{messages.request_dt_requested}" sortBy="#{reviewRequest.localDate}" filterBy="#{reviewRequest.localDate}" filterMatchMode="contains">
+					<h:outputLabel value="#{reviewRequest.localDate}">
+						<f:convertDateTime pattern="yyyy-MM-dd HH:mm" type="both"/>
+					</h:outputLabel>
+				</p:column>					
+				<p:column headerText="#{messages.request_dt_machine}" sortBy="#{reviewRequest.machine}" filterBy="#{reviewRequest.machine}" filterMatchMode="contains">
+					<h:outputLabel value="#{reviewRequest.machine} - #{reviewRequest.machineObject.machineDescription}" />
+				</p:column>
+				<p:column headerText="#{messages.request_dt_requester}" sortBy="#{reviewRequest.user}" filterBy="#{reviewRequest.user}" filterMatchMode="contains">
+					<h:outputLabel value="#{reviewRequest.user}" />
+				</p:column>		
+				<p:column headerText="#{messages.request_dt_problem}" filterBy="#{reviewRequest.problem}" filterMatchMode="contains">
+					<h:outputLabel value="#{reviewRequest.problem}" />
+				</p:column>
+				<p:column headerText="#{messages.request_dt_priority}" sortBy="#{reviewRequest.priorityObject.priorityLabel}" filterBy="#{reviewRequest.priorityObject.priorityLabel}" filterOptions="#{userBean.priorityOptions}" filterMatchMode="exact">
+			        <h:outputLabel value="#{reviewRequest.priorityObject.priorityLabel}" />
+		        </p:column>
+		        <p:column headerText="#{messages.request_dt_department}" sortBy="#{reviewRequest.departmentObject.departmentLabel}" filterBy="#{reviewRequest.departmentObject.departmentLabel}" filterOptions="#{userBean.departmentOptions}" filterMatchMode="exact">
+			        <h:outputLabel value="#{reviewRequest.departmentObject.departmentLabel}"/>
+		        </p:column>
+		        <p:column headerText="#{messages.request_dt_status}" sortBy="#{reviewRequest.status.status}">
+					<p:graphicImage value="resources/images/#{reviewRequest.status.statusPicture}" width="42" height="42" />
+		        </p:column>		
+			</p:dataTable>
+			
+			<p:dialog modal="true" widgetVar="dlg" header="Confirm Reject Service Request">
+				<h:panelGrid id="display" columns="2">
+					<h:outputText value="Machine: " />
+					<h:outputText value="#{serviceRequestsReviewBean.selectedServiceRequest.machineObject.machine} - #{serviceRequestsReviewBean.selectedServiceRequest.machineObject.machineDescription}" />
+					<h:outputText value="Problem: " />
+					<h:outputText value="#{serviceRequestsReviewBean.selectedServiceRequest.problem}" />					
+					<h:outputText value="Reason: " />
+					<p:selectOneMenu id="reasonSelect" value="#{statusRequestsBean.rejectionReason}">
+			        	<f:selectItems value ="#{statusRequestsBean.rejectionReasonDropdown}" var="reject" itemLabel="#{reject.rejectionReasonLabel}" itemValue="#{reject.rejectionReasonValue}" />
+				    </p:selectOneMenu>
+					<p:commandButton id="rejectButtonDialog" update="display" action="#{statusRequestsBean.reject}" value="Reject"  title="Reject" oncomplete="dlg.hide()">
+		                <!--<f:setPropertyActionListener value="#{statusRequestsBean.selectedServiceRequest}" target="#{statusRequestsBean.selectedServiceRequest}" /> -->
+		            </p:commandButton>
+		            <p:commandButton id="cancelReject" value="Cancel" onclick="dlg.hide()" type="button" />			
+				</h:panelGrid>
+			</p:dialog>			
+		</h:form>
+		
+		<p:panelGrid columns="1" style="border:none;" rendered="#{userBean.signedInUser.serviceRequestReviewPermission == 2}">			 
+			<h:outputText value="#{messages.review_permission}" style="font-size:14pt;" />
+			<p:graphicImage value="resources/images/rejectmark.PNG" width="200" height="200" />
+		</p:panelGrid>
+		
+
+	   	
+	</f:view>
+	</ui:define>
+</ui:composition>                                     

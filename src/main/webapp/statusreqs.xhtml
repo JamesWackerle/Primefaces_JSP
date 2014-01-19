@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/template.xhtml">
+	<ui:define name="content">
+		<f:view>
+			<h:form id="requestsForm" rendered="#{userBean.signedInUser.serviceRequestApprovalPermission == 1}">
+			    
+			    <p:contextMenu for="statusRequestDT" id="contextMenuID">
+			        <p:menuitem id="viewContextMenuOption" value="View" update="display, op" icon="ui-icon-search" oncomplete="opWidget.show()"/>
+			    </p:contextMenu>
+			    
+			    
+				<p:overlayPanel id="op" widgetVar="opWidget" for="contextMenuID" at="center top">
+						<h:outputText value="#{statusRequestsBean.selectedServiceRequest.problem}" />
+				</p:overlayPanel>	
+				
+				<p:dataTable id="statusRequestDT" var="statusRequest" value="#{statusRequestsBean.requests}" selection="#{statusRequestsBean.selectedServiceRequest}" rowKey="#{statusRequest.callNumber}" selectionMode="single" sortBy="#{statusRequest.callNumber}" sortOrder="descending" paginator="true" rows="10"
+			                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+			                 rowsPerPageTemplate="5,10,15" resizableColumns="true" style="width: 100%;">
+					<f:facet name="header">
+						<div style="font-weight: bold; font-size:30pt;">
+							#{messages.status_title}
+						</div>
+					</f:facet>
+					
+					<p:column headerText="#{messages.request_dt_call_number}" sortBy="#{statusRequest.callNumber}" filterBy="#{statusRequest.callNumber}" filterMatchMode="contains">
+						<h:outputLabel value="#{statusRequest.callNumber}" />
+					</p:column>	
+					<p:column headerText="#{messages.request_dt_requested}" sortBy="#{statusRequest.localDate}" filterBy="#{statusRequest.localDate}" filterMatchMode="contains">
+						<h:outputLabel value="#{statusRequest.localDate}">
+							<f:convertDateTime pattern="yyyy-MM-dd HH:mm" type="both"/>
+						</h:outputLabel>
+					</p:column>	
+					<p:column headerText="#{messages.request_dt_requester}" sortBy="#{statusRequest.user}" filterBy="#{statusRequest.user}" filterMatchMode="contains" >
+						<h:outputLabel value="#{statusRequest.user}" />
+					</p:column>					
+					<p:column headerText="#{messages.request_dt_machine}" sortBy="#{statusRequest.machine}" filterBy="#{statusRequest.machine}" filterMatchMode="contains">
+			            <p:inplace>
+							<p:autoComplete id="machine2" value="#{statusRequest.machineObject}" var="m" itemValue="#{m}" converter="machineConverter" itemLabel="#{m.machine} - #{m.machineDescription}" completeMethod="#{requestBean.completeMachineName}" queryDelay="20"/>              							
+         				</p:inplace>
+					</p:column>
+					<p:column headerText="#{messages.request_dt_problem}" sortBy="#{statusRequest.problem}" filterBy="#{statusRequest.problem}" filterMatchMode="contains">
+			            <p:inplace>
+       						<p:inputText value="#{statusRequest.problem}" />
+   						</p:inplace>
+					</p:column>
+					<p:column headerText="#{messages.request_dt_message}" sortBy="#{statusRequest.comments}" filterBy="#{statusRequest.comments}" filterMatchMode="contains">
+						<p:inputTextarea rows="6" autoResize="false" cols="17" value="#{statusRequest.comments}" />
+					</p:column>
+					<p:column headerText="#{messages.request_dt_priority}" sortBy="#{statusRequest.priority}" filterBy="#{statusRequest.priorityObject.priorityLabel}" filterOptions="#{userBean.priorityOptions}" filterMatchMode="exact">
+						<p:selectOneMenu id="prioritySelect" value="#{statusRequest.priority}">
+						  	<f:selectItems value="#{userBean.priorityDropdownObject}" var="priority" itemLabel="#{priority.priorityLabel}" itemValue="#{priority.priorityValue}"/>
+				        </p:selectOneMenu>
+			        </p:column>
+			        <p:column headerText="#{messages.request_dt_department}" sortBy="#{statusRequest.department}" filterBy="#{statusRequest.departmentObject.departmentLabel}" filterOptions="#{userBean.departmentOptions}" filterMatchMode="exact">
+						<p:selectOneMenu id="departmentSelect" value="#{statusRequest.department}">
+			              <f:selectItems value ="#{userBean.departmentDropdownObject}" var="department" itemLabel="#{department.departmentLabel}" itemValue="#{department.departmentValue}" />
+				        </p:selectOneMenu>
+			        </p:column>
+			        <p:column headerText="#{messages.request_dt_assign}" rendered="#{userBean.signedInUser.isMaintananceSupervisor == 1}">
+						<p:selectOneMenu id="AssignedToSelect" value="#{statusRequest.serviceEngineer}">
+						<f:selectItems value ="#{statusRequestsBean.assignedToDropdown}" />
+				        </p:selectOneMenu>
+			        </p:column>     
+			        <p:column headerText="#{messages.request_dt_file_upload}">
+						   		<p:fileUpload fileUploadListener="#{fileUploadController.handleFileUpload}"
+								            mode="advanced"
+								            auto="true"
+								            sizeLimit="100000" 
+								            allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/>
+				
+			        </p:column>
+			        <p:column headerText="#{messages.request_dt_action}">
+			            <p:commandButton id="approveButton" update=":requestsForm:display,growl" action="#{statusRequestsBean.approve}" value="#{messages.label_approve}"  title="#{messages.label_approve}">
+			                <f:setPropertyActionListener value="#{statusRequest}" target="#{statusRequestsBean.selectedServiceRequest}" />
+			            </p:commandButton>
+			            <p:commandButton id="rejectButtonView" update=":requestsForm:display" oncomplete="dlg.show()" value="#{messages.label_reject}"  title="#{messages.label_reject}">
+			                <f:setPropertyActionListener value="#{statusRequest}" target="#{statusRequestsBean.selectedServiceRequest}" />
+			            </p:commandButton>            
+			            <p:commandButton id="saveButton" update=":requestsForm:display,growl" action="#{statusRequestsBean.saveServiceRequestChanges}" value="#{messages.request_dt_save}" title="#{messages.request_dt_save}">
+			                <f:setPropertyActionListener value="#{statusRequest}" target="#{statusRequestsBean.selectedServiceRequest}" />
+			            </p:commandButton>
+			            <p:growl id="growl" showDetail="true" sticky="true" />                          
+			        </p:column>				
+				</p:dataTable>
+				
+				<p:dialog widgetVar="dlg" header="#{messages.status_reject_dlg_header}">
+					<h:panelGrid id="display" columns="2">
+						<h:outputText value="#{messages.label_machine}" />
+						<h:outputText value="#{statusRequestsBean.selectedServiceRequest.machineObject.machine} - #{statusRequestsBean.selectedServiceRequest.machineObject.machineDescription}" />
+						<h:outputText value="#{messages.label_problem}" />
+						<h:outputText value="#{statusRequestsBean.selectedServiceRequest.problem}" />
+						<h:outputText value="#{messages.label_reason}" />
+						<p:selectOneMenu id="reasonSelect" value="#{statusRequestsBean.rejectionReason}">
+			              <f:selectItems value ="#{statusRequestsBean.rejectionReasonDropdown}" var="reject" itemLabel="#{reject.rejectionReasonLabel}" itemValue="#{reject.rejectionReasonValue}" />
+				        </p:selectOneMenu>	
+						<p:commandButton id="rejectButtonDialog" update=":requestsForm:display" action="#{statusRequestsBean.reject}" value="#{messages.label_reject}"  title="#{messages.label_reject}" oncomplete="dlg.hide()">
+			                <!--<f:setPropertyActionListener value="#{statusRequestsBean.selectedServiceRequest}" target="#{statusRequestsBean.selectedServiceRequest}" /> -->
+			            </p:commandButton>
+			            <p:commandButton id="cancelReject" value="#{messages.label_cancel}" onclick="dlg.hide()" type="button" />			
+					</h:panelGrid>
+				</p:dialog>
+			</h:form>
+			
+			<p:panelGrid columns="1" style="border:none;" rendered="#{userBean.signedInUser.serviceRequestApprovalPermission == 2}">			 
+				<h:outputText value="You Do not Have Permission to Approve or Reject Requests" style="font-size:14pt;" />
+				<p:graphicImage value="resources/images/rejectmark.PNG" width="200" height="200" />
+			</p:panelGrid>
+	
+		</f:view>
+	</ui:define>
+</ui:composition>                                     

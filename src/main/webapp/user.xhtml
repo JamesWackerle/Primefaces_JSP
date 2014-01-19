@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/template.xhtml">
+<ui:define name="content">
+	<f:view>
+       <p:messages autoUpdate="true" />
+       
+		<h:form id="userForm" method="post" action="j_security_check">
+			<h:inputHidden value="#{userBean.localTimeDifference}" id="timeDiff" />
+			<p:panelGrid columns="5" colspan="40">
+				<f:facet name="header">
+				<div style="font-weight: bold; font-size:30pt;">
+				User Selection
+				</div>
+				</f:facet>
+				
+				<p:selectOneMenu id="userSelect" value="#{userBean.selectedUserName}">
+				<f:selectItems value ="#{userBean.userDropdown}" />
+		        </p:selectOneMenu>
+		        
+		        <p:commandButton value="Select" onclick="setTimeZoneDifference();" oncomplete="location.reload();" action="#{userBean.selectUser}">
+		       		<!--  <p:ajax listener="#{requestBean.submit}" immediate="true"/> -->
+		       	</p:commandButton>			
+			</p:panelGrid>
+		</h:form>
+		
+		<p:panelGrid columns="9">
+				<f:facet name="header">
+					<div style="font-weight: bold; font-size:30pt;">
+					User Information Panel
+					</div>
+				</f:facet>
+				<h:outputText value="User: #{userBean.signedInUser.name}" />
+				<h:outputText value="Employee Number: #{userBean.signedInUser.employeeNumber}" />
+				<h:outputText value="Supervisor: #{userBean.signedInUser.supervisorName}" />
+				<h:outputText value="Service Request Entry: #{userBean.signedInUser.serviceRequestEntryPermission}" />
+				<h:outputText value="Service Request Approval: #{userBean.signedInUser.serviceRequestApprovalPermission}" />
+				<h:outputText value="Service Request Review: #{userBean.signedInUser.serviceRequestReviewPermission}" />
+				<h:outputText value="Order List: #{userBean.signedInUser.orderListViewPermission}" />
+				<h:outputText value="Order material: #{userBean.signedInUser.orderMatterialPermission}" />
+				<h:outputText value="Issue Material: #{userBean.signedInUser.issueMaterialPermission}" />			
+		</p:panelGrid>
+		
+		<script>
+			function setTimeZoneDifference() {
+				var offset = new Date().getTimezoneOffset() * 60 * 1000; // in Milliseconds time difference between UTC and local time
+				document.getElementById('userForm:timeDiff').value = offset;
+				return offset
+			}
+		</script>
+	</f:view>
+</ui:define>
+</ui:composition>                                     
